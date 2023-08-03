@@ -35,31 +35,73 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: authorization/
-      Handler: main:main
+      Handler: main.handleAuth
       Events:
-        Type: HttpApi
-        Properties:
-          ApiId: !Ref CCAuthority
-          Path: /Auth
-          Method: POST
-          Auth:
-            Authorizaer: ChitChatCognito
-  ChitChatFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Properties:
-      CodeUri: chitchat/
-      Handler: main:main
-      Events:
-        CatchAll:
-          Type: HttpApi # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+        CCAuthEvent:
+          Type: HttpApi
           Properties:
-            Path: /chitchat
-            Method: GET
-            ApiId:
-              Ref: ChitChatApi
-      Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
-        Variables:
-          PARAM1: VALUE
+            ApiId: !Ref CCAuthority
+            Path: /auth
+            Method: POST
+            Auth:
+              Authorizer: ChitChatCognito
+  CCSignup:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: singup/
+      Handler: main.handleSignup
+      Events:
+        CCAuthEvent:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref CCAuthority
+            Path: /signup
+            Method: POST
+            Auth:
+              Authorizer: ChitChatCognito
+  CCTokenRefresh:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: refreshToken/
+      Handler: main.handleTokenRefresh
+      Events:
+        CCAuthEvent:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref CCAuthority
+            Path: /refreshToken
+            Method: POST
+            Auth:
+              Authorizer: ChitChatCognito
+
+  CCTestingFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: testing/
+      Handler: main.go
+      Events:
+        TestEvent:
+          Type: HttpApi
+          Properties:
+            Path: /Test
+            Method: POST
+
+  # ChitChatFunction:
+  #   Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+  #   Properties:
+  #     CodeUri: chitchat/
+  #     Handler: main:main
+  #     Events:
+  #       ChitChatEvent:
+  #         Type: HttpApi # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+  #         Properties:
+  #           Path: /chitchat
+  #           Method: GET
+  #           ApiId:
+  #             Ref: ChitChatApi
+  #     Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+  #       Variables:
+  #         PARAM1: VALUE
   DynamoDBTable:
     Type: AWS::DynamoDB::Table
     Properties:
