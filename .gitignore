@@ -1,1 +1,6 @@
-/ChitChatLambda/secrets.json
+/secrets.json
+/notes.txt
+/CCLambda/template.yaml
+/CCLambda/secrets
+/CCLambda/hello-world
+/CCLambda/.aws-sam
